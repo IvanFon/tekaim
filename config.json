@@ -1,0 +1,24 @@
+// This file supports single-line C-style comments!
+{
+  // Filename using strftime formatting
+  "filename": "%Y-%m-%d-%H-%M-%S",
+  // Directory to save screenshots to
+  "dir": "~/.tekaim/",
+  // Screenshot tool
+  "screenshot": {
+    "bin": "maim",
+    // ${file} = filename
+    "args": "-s ${file}"
+  },
+  // Upload tool
+  "upload": {
+    "bin": "curl",
+    // ${file} = filename
+    // ${host} = host url
+    "args": "-s -F file=@${file} ${host}"
+  },
+  // Upload endpoint
+  "host": "https://api.teknik.io/v1/Upload",
+  // File format/suffix
+  "format": ".png"
+}
