@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='tekaim',
-    version='1.0.1',
+    version='1.1.0',
     description='A simple tool to take and upload screenshots to teknik.io',
     author='Ivan Fonseca',
     author_email='ivanfon@riseup.net',

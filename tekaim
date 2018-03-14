@@ -11,7 +11,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.0.1"
+VERSION = "1.1.1"
 
 def main(argv):
     """main"""
@@ -54,7 +54,12 @@ def main(argv):
     # upload and capture response
     out_raw = subprocess.check_output(upload_cmd, shell=True)
     out = json.loads(out_raw)
-    print('File uploaded to: ' + out['result']['url'])
+    url = out['result']['url']
+
+    # print and copy link to clipboard
+    clipboard_cmd = config['clipboard']['command'].replace('${url}', url)
+    subprocess.call(clipboard_cmd, shell=True)
+    print('File uploaded to: ' + url + ' (copied to clipboard)')
 
 if __name__ == "__main__":
     main(sys.argv)

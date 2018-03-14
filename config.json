@@ -17,6 +17,11 @@
     // ${host} = host url
     "args": "-s -F file=@${file} ${host}"
   },
+  // Copy to clipboard
+  "clipboard": {
+    // ${url} = upload url
+    "command": "echo \"${url}\" | xclip -selection c"
+  },
   // Upload endpoint
   "host": "https://api.teknik.io/v1/Upload",
   // File format/suffix
