@@ -6,11 +6,12 @@ tekaim - Simple screenshot uploader using maim and teknik.io
 
 from datetime import datetime
 import json
+import os
 import re
 import subprocess
 import sys
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 def main(argv):
     """main"""
@@ -22,8 +23,8 @@ def main(argv):
         print('Made by Ivan Fonseca\n<3')
         return
 
-    # load settings file
-    with open('config.json', 'r') as config_file:
+    # load settings file from script directory
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/config.json', 'r') as config_file:
         config = config_file.read()
     # strip comments
     config = re.sub(r'^\s*//.*$', '', config, flags=re.MULTILINE)
