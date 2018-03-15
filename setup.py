@@ -8,6 +8,7 @@ setup(
     author_email='ivanfon@riseup.net',
     url='https://github.com/IvanFon/tekaim',
     license='GPL3',
-    scripts=['tekaim']
+    scripts=['tekaim'],
+    data_files=[('', ['config.json'])]
 )
 
