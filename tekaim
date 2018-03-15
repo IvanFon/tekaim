@@ -4,6 +4,7 @@
 tekaim - Simple screenshot uploader using maim and teknik.io
 """
 
+from pathlib import Path
 from datetime import datetime
 import json
 import os
@@ -23,36 +24,45 @@ def main(argv):
         print('Made by Ivan Fonseca\n<3')
         return
 
-    # load settings file from script directory
-    with open(os.path.dirname(os.path.realpath(__file__)) + '/config.json', 'r') as config_file:
+    # tekaim dircectory
+    tekaim_dir = Path.home().joinpath('.tekaim')
+    # screenshot directory
+    screenshot_dir = tekaim_dir.joinpath('screenshots')
+
+    # check if tekaim directory exists
+    if not os.path.exists(tekaim_dir):
+        print('Error: tekaim directory ({}) does not exist!'.format(tekaim_dir))
+        print('Create it and put config.json in it!')
+        return
+
+    # load settings file
+    with open(tekaim_dir.joinpath('config.json'), 'r') as config_file:
         config = config_file.read()
     # strip comments
     config = re.sub(r'^\s*//.*$', '', config, flags=re.MULTILINE)
     config = json.loads(config)
 
     # create screenshots directory if it doesn't already exist
-    subprocess.call('mkdir -p ' + config['dir'], shell=True)
+    if not os.path.exists(screenshot_dir):
+        os.makedirs(screenshot_dir)
 
     # get filename
     filename = datetime.now().strftime(config['filename']) + config['format']
 
-    # cd command
-    cd_cmd = 'cd ' + config['dir'] + ' && '
-
     # build screenshot command
     screenshot_args = config['screenshot']['args'].replace('${file}', filename)
-    screenshot_cmd = cd_cmd + config['screenshot']['bin'] + ' ' + screenshot_args
+    screenshot_cmd = '{} {}'.format(config['screenshot']['bin'], screenshot_args)
 
     # build upload command
     upload_args = config['upload']['args'].replace('${file}', filename)
     upload_args = upload_args.replace('${host}', config['host'])
-    upload_cmd = cd_cmd + config['upload']['bin'] + ' ' + upload_args
+    upload_cmd = '{} {}'.format(config['upload']['bin'], upload_args)
 
     # take screenshot
-    subprocess.call(screenshot_cmd, shell=True)
+    subprocess.call(screenshot_cmd, shell=True, cwd=screenshot_dir)
 
     # upload and capture response
-    out_raw = subprocess.check_output(upload_cmd, shell=True)
+    out_raw = subprocess.check_output(upload_cmd, shell=True, cwd=screenshot_dir)
     out = json.loads(out_raw)
     url = out['result']['url']
 

@@ -2,8 +2,6 @@
 {
   // Filename using strftime formatting
   "filename": "%Y-%m-%d-%H-%M-%S",
-  // Directory to save screenshots to
-  "dir": "~/.tekaim/",
   // Screenshot tool
   "screenshot": {
     "bin": "maim",
