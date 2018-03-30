@@ -12,7 +12,7 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 
 def main(argv):
     """main"""
@@ -72,16 +72,19 @@ def main(argv):
     out_raw = subprocess.check_output(upload_cmd, shell=True, cwd=screenshot_dir)
     out = json.loads(out_raw)
     url = out['result']['url']
+    deletion = '{}/{}'.format(url, out['result']['deletionKey'])
 
     # print and copy link to clipboard
     clipboard_cmd = config['clipboard']['command'].replace('${url}', url)
     subprocess.call(clipboard_cmd, shell=True)
-    print('File uploaded to: ' + url + ' (copied to clipboard)')
+    print('File uploaded to: {} (copied to clipboard)'.format(url))
+    print('Deletion link: {}'.format(deletion))
 
     # save link
     if config['history']:
         with open(history_dir.joinpath(history_filename), 'w') as f:
-            f.write(url)
+            print('Image link: {}'.format(url), file=f)
+            print('Deletion link: {}'.format(deletion), file=f)
 
 if __name__ == "__main__":
     main(sys.argv)
