@@ -23,5 +23,7 @@
   // Upload endpoint
   "host": "https://api.teknik.io/v1/Upload",
   // File format/suffix
-  "format": ".png"
+  "format": ".png",
+  // Save links in history directory
+  "history": true
 }
