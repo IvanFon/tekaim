@@ -12,17 +12,27 @@ import re
 import subprocess
 import sys
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 
 def main(argv):
     """main"""
     # check arguments
     if '-h' in argv or '--help' in argv:
-        print('tekaim v' + VERSION)
-        print('Run without arguments to capture a screenshot and upload to teknik.io')
+        print('tekaim v{} - simple teknik.io image uploader'.format(VERSION))
+        print('Run without arguments to capture a selection')
+        print('Run with "-f" to capture entire screen')
         print('https://github.com/IvanFon/tekaim')
         print('Made by Ivan Fonseca\n<3')
         return
+
+    # dev mode
+    dev = False
+    if '-d' in argv:
+        dev = True
+
+    selection = True
+    if '-f' in argv:
+        selection = False
 
     # tekaim dircectory
     tekaim_dir = Path.home().joinpath('.tekaim')
@@ -37,8 +47,13 @@ def main(argv):
         print('Create it and put config.json in it!')
         return
 
+    config_path = tekaim_dir.joinpath('config.json')
+
+    if dev:
+        config_path = 'config.json'
+
     # load settings file
-    with open(tekaim_dir.joinpath('config.json'), 'r') as config_file:
+    with open(config_path, 'r') as config_file:
         config = config_file.read()
     # strip comments
     config = re.sub(r'^\s*//.*$', '', config, flags=re.MULTILINE)
@@ -56,19 +71,32 @@ def main(argv):
     image_filename = filename + config['format']
     history_filename = filename + '.txt'
 
+    if dev:
+        print(image_filename)
+        print(history_filename)
+
     # build screenshot command
     screenshot_args = config['screenshot']['args'].replace('${file}', image_filename)
     screenshot_cmd = '{} {}'.format(config['screenshot']['bin'], screenshot_args)
+    if selection:
+        screenshot_cmd += ' ' + config['screenshot']['optargs']['selection']
+
+    if dev:
+        print(screenshot_cmd)
 
     # build upload command
     upload_args = config['upload']['args'].replace('${file}', image_filename)
     upload_args = upload_args.replace('${host}', config['host'])
     upload_cmd = '{} {}'.format(config['upload']['bin'], upload_args)
 
+    if dev:
+        print(upload_cmd)
+
     # take screenshot
     subprocess.call(screenshot_cmd, shell=True, cwd=screenshot_dir)
 
     # upload and capture response
+    print('Uploading...')
     out_raw = subprocess.check_output(upload_cmd, shell=True, cwd=screenshot_dir)
     out = json.loads(out_raw)
     url = out['result']['url']

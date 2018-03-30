@@ -6,7 +6,12 @@
   "screenshot": {
     "bin": "maim",
     // ${file} = filename
-    "args": "-s ${file}"
+    "args": "${file}",
+    // optional arguments
+    "optargs": {
+      // choose selection
+      "selection": "-s"
+    }
   },
   // Upload tool
   "upload": {
