@@ -4,15 +4,19 @@
 tekaim - Simple screenshot uploader using maim and teknik.io
 """
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import urllib.request
 
-VERSION = "1.5.0"
+VERSION = "1.6.0"
+GITHUB_URL = 'https://github.com/IvanFon/tekaim'
+CONFIG_URL = 'https://raw.githubusercontent.com/IvanFon/tekaim/master/config.json'
 
 def main(argv):
     """main"""
@@ -21,7 +25,7 @@ def main(argv):
         print('tekaim v{} - simple teknik.io image uploader'.format(VERSION))
         print('Run without arguments to capture a selection')
         print('Run with "-f" to capture entire screen')
-        print('https://github.com/IvanFon/tekaim')
+        print(GITHUB_URL)
         print('Made by Ivan Fonseca\n<3')
         return
 
@@ -41,16 +45,25 @@ def main(argv):
     # history directory
     history_dir = tekaim_dir.joinpath('history')
 
-    # check if tekaim directory exists
-    if not os.path.exists(tekaim_dir):
-        print('Error: tekaim directory ({}) does not exist!'.format(tekaim_dir))
-        print('Create it and put config.json in it!')
-        return
+    # create tekaim directory if it doesn't exist
+    tekaim_dir.mkdir(exist_ok=True)
+    # create screenshots directory if it doesn't exist
+    screenshot_dir.mkdir(exist_ok=True)
+    # create history directory if it doesn't exist
+    history_dir.mkdir(exist_ok=True)
 
     config_path = tekaim_dir.joinpath('config.json')
 
     if dev:
-        config_path = 'config.json'
+        config_path = Path('config.json')
+
+    # check if config file is missing
+    if not config_path.is_file():
+        print('Config at {} not found! Downloading it from {}...'.format(config_path, CONFIG_URL))
+        # download it
+        with urllib.request.urlopen(CONFIG_URL) as res, open(config_path, 'wb') as out:
+            shutil.copyfileobj(res, out)
+        print('Config downloaded!')
 
     # load settings file
     with open(config_path, 'r') as config_file:
@@ -58,13 +71,6 @@ def main(argv):
     # strip comments
     config = re.sub(r'^\s*//.*$', '', config, flags=re.MULTILINE)
     config = json.loads(config)
-
-    # create screenshots directory if it doesn't already exist
-    if not os.path.exists(screenshot_dir):
-        os.makedirs(screenshot_dir)
-    # create history directory if it doesn't already exist
-    if not os.path.exists(history_dir):
-        os.makedirs(history_dir)
 
     # get filename
     filename = datetime.now().strftime(config['filename'])
@@ -93,6 +99,7 @@ def main(argv):
         print(upload_cmd)
 
     # take screenshot
+    print('Taking screenshot...')
     subprocess.call(screenshot_cmd, shell=True, cwd=screenshot_dir)
 
     # upload and capture response
