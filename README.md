@@ -29,6 +29,8 @@ sudo python setup.py install
 
 Run `tekaim` and make a selection. After a few seconds, the URL to your image will appear. By default, tekaim will upload to [teknik.io](https://www.teknik.io/). The URL will also be copied to your clipboard.
 
+Screenshots are saved to `~/.tekaim/screenshots/` and image links and deletion links are saved to `~/.tekaim/history/`.
+
 ## Dependencies
 
 By default, tekaim depends on [maim](https://github.com/naelstrof/maim) for screenshots, [curl](https://github.com/curl/curl) for uploading, and [xclip](https://github.com/astrand/xclip) to copy to your clipboard. If you want to use something different, you can configure commands and arguments in `config.json`.
