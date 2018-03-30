@@ -13,7 +13,7 @@
     "bin": "curl",
     // ${file} = filename
     // ${host} = host url
-    "args": "-s -F file=@${file} ${host}"
+    "args": "-s -F file=@${file} -F genDeletionKey=true -F doNotTrack=true ${host}"
   },
   // Copy to clipboard
   "clipboard": {
